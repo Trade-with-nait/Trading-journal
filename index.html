@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Trading History</title>
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+                /* font-size: 1rem; */
+                font-family: monospace;
+                font-weight: bold;
+            }
+
+            html {
+                background-color: #333;
+            }
+
+            .container {
+                min-height: 99.5svh;
+                border: 1px solid #848e9c;
+                width: 99%;
+                margin: auto;
+                padding: 2.5px 10px 5px 10px;
+                display: flex;
+                justify-content: center;
+                flex-direction: column;
+                /* background-color: #bed4d4; */
+                background-color: #181a20;
+            }
+            .container > .inputs {
+                margin: auto;
+                display: flex;
+                justify-content: center;
+                flex-direction: column;
+                padding: 8px;
+                width: 100%;
+                gap: 8px 8px;
+            }
+
+            .container .inputs input {
+                padding: 20px;
+                background-color: #181a20;
+                text-align: center;
+                border: 1.5px solid #848e9c;
+                outline: none;
+                border-radius: 6px;
+                color: #ddd;
+            }
+
+            .container .inputs input:focus,
+            .container .inputs input:hover {
+                transition: all 0.4s ease-in-out;
+                border: 1px solid #f8d12f;
+            }
+
+            .container .inputs input::placeholder {
+                color: #848e9c;
+            }
+
+            .container > .buttons {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                padding: 5px;
+                gap: 20px 20px;
+                grid-template-areas: "bt bt1" "bt2 bt3" "bt4 bt5";
+                /* background-color: #bed4d4; */
+            }
+
+            .container > .buttons button:hover {
+                transform: scale(1.013);
+                box-shadow: 0px 0px 1.5px 0.7px #eee;
+            }
+
+            .container > .buttons button:nth-child(1) {
+                grid-area: bt;
+            }
+            .container > .buttons button:nth-child(2) {
+                grid-area: bt1;
+            }
+            .container > .buttons button:nth-child(3) {
+                grid-area: bt2;
+            }
+            .container > .buttons button:nth-child(4) {
+                grid-area: bt3;
+            }
+            .container > .buttons button:nth-child(5) {
+                grid-area: bt4;
+            }
+            .container > .buttons button:nth-child(6) {
+                grid-area: bt5;
+            }
+
+            button {
+                padding: 20px 10px;
+                border-radius: 4px;
+                outline: none;
+                border: 1px solid #fcd535;
+                background-color: #fcd535;
+                text-align: center;
+                transition: all 0.15s ease;
+            }
+            .hr {
+                /* padding: 5px; */
+                /* background-color: #bed4d4; */
+                display: flex;
+                justify-content: center;
+            }
+            .hr hr {
+                border: none;
+                width: 100%;
+                height: 1px;
+                margin: 0;
+                background-color: #848e9c;
+            }
+
+            .container .h1 {
+                display: flex;
+                padding: 5px;
+                /* background-color: #bed4d4; */
+                justify-content: center;
+                align-content: center;
+                align-items: center;
+            }
+            .container .h1 h1 {
+                margin-top: 25px;
+                color: #eee;
+                text-align: center;
+                font-weight: bold;
+            }
+            pre {
+                border-bottom-right-radius: 6px;
+                border-bottom-left-radius: 6px;
+                display: flex;
+                /* color: #2b3139; */
+                color: #b7bdc6;
+                font-weight: bold;
+                line-height: 1.5;
+                flex-direction: column;
+                background-color: #202630;
+                justify-content: center;
+                align-items: center;
+                padding: 10px;
+            }
+            #last-hr {
+                display: none;
+            }
+
+            #select {
+                padding: 20px;
+                outline: none;
+                border-radius: 6px;
+                background-color: #181a20;
+                color: #848e9c;
+                text-align: center;
+                border-color: #848e9c;
+                transition: all 0.3s ease-in-out;
+            }
+
+            #select:hover {
+                border: 1px solid #f8d12f;
+            }
+
+            #select:focus {
+                border: 1px solid #f8d12f;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="h1">
+                <h1>Trading Journal</h1>
+            </div>
+            <div class="inputs">
+                <label for="select"></label>
+                <select id="select" title="Select A coin name"></select>
+                <label for="coin-name"></label>
+                <input
+                    required
+                    type="text"
+                    id="coin-name"
+                    title="trade name"
+                    placeholder="Coin name"
+                />
+                <label for="filled-amount"></label>
+                <input
+                    required
+                    type="number"
+                    id="filled-amount"
+                    title="Filled Amount"
+                    placeholder="Filled Amount"
+                />
+                <label for="price-entry"></label>
+                <input
+                    required
+                    type="number"
+                    id="price-entry"
+                    title="Entry Price"
+                    placeholder="Entry Price"
+                />
+                <label for="total"></label>
+                <input
+                    type="number"
+                    placeholder="Total USDT"
+                    id="total"
+                    required
+                    title="Total"
+                />
+
+                <label for="target-price"></label>
+                <input
+                    id="target-price"
+                    required
+                    type="number"
+                    title="Target Price"
+                    placeholder="Target Price"
+                />
+                <label for="percentage"></label>
+                <input
+                    type="number"
+                    id="percentage"
+                    placeholder="Percentage Target"
+                    required
+                />
+                <input
+                    type="text"
+                    id="reason"
+                    placeholder="Entry Reason?"
+                    required
+                />
+                <br />
+            </div>
+            <div class="buttons">
+                <button type="button" id="add-trade">Add Trade</button>
+                <button type="button" id="view-history">Show History</button>
+                <button type="button" id="export-history">
+                    Export History
+                </button>
+                <button type="button" id="clear-history">
+                    Clear All History
+                </button>
+                <button type="button" id="remove-item">
+                    Clear selected coin
+                </button>
+                <button type="button" id="display-item">
+                    Show Matched coins
+                </button>
+            </div>
+            <div class="hr">
+                <hr />
+            </div>
+            <!-- <div class="content" id="content">Content</div> -->
+            <pre id="history-output">Trading History will apear here!</pre>
+            <div class="hr">
+                <hr id="last-hr" />
+            </div>
+        </div>
+        <script>
+            function saveToLocalStorage(key, value) {
+                localStorage.setItem(key, JSON.stringify(value));
+            }
+
+            function getFromLocalStorage(key) {
+                const data = localStorage.getItem(key);
+                return data ? JSON.parse(data) : [];
+            }
+
+            function getTradeDetails() {
+                const coinName = document
+                    .getElementById("coin-name")
+                    .value.toUpperCase();
+                const filledAmount =
+                    document.getElementById("filled-amount").value;
+                const priceEntry = document.getElementById("price-entry").value;
+                const Total = document.getElementById("total").value;
+                const targetPrice =
+                    document.getElementById("target-price").value;
+                const Percentage = document.getElementById("percentage").value;
+                const reason = document.getElementById("reason").value;
+                if (
+                    coinName.length > 0 &&
+                    filledAmount.length > 0 &&
+                    priceEntry.length > 0 &&
+                    Total.length > 0 &&
+                    targetPrice.length > 0 &&
+                    Percentage.length > 0 &&
+                    reason.length > 0
+                ) {
+                    return {
+                        coinName,
+                        filledAmount,
+                        priceEntry,
+                        Total,
+                        timestamp: new Date().toLocaleString(),
+                        targetPrice,
+                        Percentage,
+                        reason,
+                    };
+                } else {
+                    return -1;
+                }
+            }
+
+            function addTrade() {
+                const trade = getTradeDetails();
+                if (trade != -1) {
+                    const history = getFromLocalStorage("tradingHistory");
+                    history.push(trade);
+                    saveToLocalStorage("tradingHistory", history);
+                    alert("Trade added successfully!");
+                    populateSelectOptions();
+                } else {
+                    alert("Please fill out the required fields!");
+                }
+            }
+
+            function displayHistory() {
+                const history = getFromLocalStorage("tradingHistory");
+                const output = document.getElementById("history-output");
+                output.textContent = "";
+                output.style.display = "flex";
+                document.getElementById("last-hr").style.display = "block";
+                if (history.length === 0) {
+                    output.textContent = "No trading history found!";
+                } else {
+                    output.textContent = "--- Trading History ---\n\n";
+                    output.textContent += `Open Positions (${history.length})\n\n`;
+                    output.textContent += "-".repeat(30) + "\n\n";
+                    history.forEach((trade, index) => {
+                        output.textContent += `#${index + 1} - ${
+                            trade.coinName
+                        }/USDT\n`;
+                        output.textContent += `Filled Amount: ${trade.filledAmount} ${trade.coinName}\n`;
+                        output.textContent += `Entry Price: $${trade.priceEntry}\n`;
+                        output.textContent += `Total USDT: $${trade.Total}\n`;
+                        output.textContent += `Date: ${trade.timestamp}\n`;
+                        output.textContent += `Target Price: ${trade.targetPrice}\n`;
+                        output.textContent += `Target in Percentage: ${trade.Percentage}%\n`;
+                        let profit = parseFloat(trade.Percentage) / 100;
+                        let totalProfit =
+                            parseFloat(trade.Total) * profit +
+                            parseFloat(trade.Total);
+                        output.textContent += `Estimated Total USDT + profits: ${totalProfit.toFixed(
+                            2
+                        )}$\n`;
+                        output.textContent += `Entry Reason: ${trade.reason}\n`;
+                        output.textContent += `-`.repeat(30) + "\n\n";
+                    });
+                }
+            }
+
+            function exportAsJsonFormat() {
+                const history = getFromLocalStorage("tradingHistory");
+                if (history.length === 0) {
+                    alert("No trading history to export!");
+                    return;
+                }
+                const blob = new Blob([JSON.stringify(history, null, 2)], {
+                    type: "application/json",
+                });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = "Trading_history.json";
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            }
+
+            const addingTrade = document.getElementById("add-trade");
+            const viewTradeHistory = document.getElementById("view-history");
+            const exportTradeHistory =
+                document.getElementById("export-history");
+
+            addingTrade.onclick = () => {
+                const tradingDetails = getTradeDetails();
+                addTrade(tradingDetails);
+                populateSelectOptions();
+                document
+                    .querySelectorAll("input")
+                    .forEach((input) => (input.value = ""));
+            };
+
+            viewTradeHistory.onclick = () => {
+                displayHistory();
+            };
+
+            exportTradeHistory.onclick = () => {
+                exportAsJsonFormat();
+            };
+
+            const clearHistory = document.getElementById("clear-history");
+            clearHistory.onclick = () => {
+                let ask = prompt("Are you sure you want to clear the history?");
+                const history = getFromLocalStorage("tradingHistory");
+                if (ask == "yes") {
+                    if (history.length > 0) {
+                        localStorage.removeItem("tradingHistory");
+                        alert("History cleared successfully!");
+                        populateSelectOptions();
+                        displayHistory();
+                    } else {
+                        alert("History is empty!");
+                    }
+                } else {
+                    alert("History will not be cleared!");
+                }
+            };
+
+            const selectElement = document.getElementById("select");
+            const removeItem = document.getElementById("remove-item");
+
+            function populateSelectOptions() {
+                selectElement.innerHTML = `<option value="" disabled selected>Select a coin name</option>`;
+                const history = getFromLocalStorage("tradingHistory");
+                history.forEach((trade) => {
+                    const option = new Option(
+                        `[${trade.coinName}] Entry Price:  ${trade.priceEntry}`,
+                        trade.coinName,
+                        trade.priceEntry
+                    );
+                    selectElement.options.add(option);
+                });
+            }
+
+            function removeTrade(CoinName, PriceEntry) {
+                const history = getFromLocalStorage("tradingHistory");
+                if (history.length > 0) {
+                    const updatedHistory = history.filter(
+                        (trade) =>
+                            trade.coinName != CoinName ||
+                            trade.priceEntry != PriceEntry
+                    );
+                    saveToLocalStorage("tradingHistory", updatedHistory);
+                    alert(
+                        `${CoinName} with ${PriceEntry} removed successfully!`
+                    );
+                    populateSelectOptions();
+                    displayHistory();
+                } else {
+                    alert("No history found!");
+                }
+            }
+
+            removeItem.onclick = () => {
+                const selectedCoin = selectElement[selectElement.selectedIndex];
+                if (selectedCoin.value) {
+                    const ask = prompt(
+                        "Are you sure you want to remove the trade?"
+                    );
+                    if (ask == "yes") {
+                        const Price = selectedCoin.innerHTML;
+                        const extractedPrice = Price.split("")
+                            .filter((el) => {
+                                if (el == ".") {
+                                    return el;
+                                }
+                                return !isNaN(parseFloat(el));
+                            })
+                            .join("");
+                        removeTrade(selectedCoin.value, extractedPrice);
+                    } else {
+                        alert("No trade removed!");
+                    }
+                } else {
+                    alert("Please select a coin name!");
+                }
+            };
+
+            const displayItem = document.getElementById("display-item");
+            displayItem.onclick = () => {
+                const history = getFromLocalStorage("tradingHistory");
+                const selectedcoin = select.value;
+                const output = document.getElementById("history-output");
+                const result = history.filter((el) => {
+                    if (selectedcoin === el.coinName) {
+                        return el;
+                    }
+                });
+                if (selectedcoin) {
+                    if (result.length > 0) {
+                        output.textContent = "--- Matched coins ---\n\n";
+                        output.textContent += `Open Positions at matched coin  (${result.length})\n\n`;
+                        output.textContent += "-".repeat(30) + "\n\n";
+                        result.forEach((trade, index) => {
+                            output.textContent += `#${index + 1} - ${
+                                trade.coinName
+                            }/USDT\n`;
+                            output.textContent += `Filled Amount: ${trade.filledAmount} ${trade.coinName}\n`;
+                            output.textContent += `Entry Price: $${trade.priceEntry}\n`;
+                            output.textContent += `Total USDT: $${trade.Total}\n`;
+                            output.textContent += `Date: ${trade.timestamp}\n`;
+                            output.textContent += `Target Price: ${trade.targetPrice}\n`;
+                            let profit = parseFloat(trade.Percentage) / 100;
+                            let totalProfits =
+                                parseFloat(trade.Total) +
+                                parseFloat(trade.Total) * profit;
+                            output.textContent += `Estimated Total USDT + Profits: ${totalProfits.toFixed(
+                                2
+                            )}$\n`;
+                            output.textContent += `Entry Reason: ${trade.reason}\n`;
+                            output.textContent += `-`.repeat(30) + "\n\n";
+                        });
+                    } else {
+                        alert("No matched coins found!");
+                    }
+                } else {
+                    alert("Please select a coin name!");
+                }
+            };
+            populateSelectOptions();
+        </script>
+    </body>
+</html>
